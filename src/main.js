@@ -1,12 +1,72 @@
 // DOM wiring: reads the form, keeps the configuration state, re-renders preview and price.
 import { COLORS, PROFILES, MATS, MAT_MARGINS, TIERS, MAT_BANDS, GLAZING, DEFAULT_CONFIG } from './catalog.js';
-import { quote, formatKip } from './pricing.js';
+import { quote, formatKip, MIN_CM, MAX_CM } from './pricing.js';
 import { frameSVG, paintDefaultArtwork } from './preview.js';
 import { makeReference, validateCustomer, orderSummary, whatsappLink } from './order.js';
 import { BUSINESS } from './config.js';
+import { LOCALES, pickLocale, translator } from './i18n.js';
 
 const $ = (id) => document.getElementById(id);
 const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+// ---- Language ----------------------------------------------------------------
+
+const LANG_STORAGE_KEY = 'khop.lang';
+
+/** Order of preference: ?lang= in the URL, the last choice on this device, then the browser languages. */
+function detectLocale() {
+  const fromUrl = new URLSearchParams(location.search).get('lang');
+  let stored = null;
+  try {
+    if (fromUrl && pickLocale([fromUrl]) === fromUrl.toLowerCase()) localStorage.setItem(LANG_STORAGE_KEY, fromUrl.toLowerCase());
+    stored = localStorage.getItem(LANG_STORAGE_KEY);
+  } catch {
+    // Storage can be blocked (private mode); the URL and browser language still work.
+  }
+  return pickLocale([fromUrl, stored, ...(navigator.languages ?? [])]);
+}
+
+const locale = detectLocale();
+const t = translator(locale);
+const lower = (s) => s.toLocaleLowerCase(locale);
+
+/** Fills every tagged element of index.html from the dictionary. */
+function applyStaticTexts() {
+  const globals = { city: BUSINESS.city };
+  document.documentElement.lang = locale;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t('meta.description'));
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    el.textContent = t(el.dataset.i18n, globals);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+    el.innerHTML = t(el.dataset.i18nHtml, globals); // values come from our own dictionary files
+  });
+  document.querySelectorAll('[data-i18n-attr]').forEach((el) => {
+    for (const pair of el.dataset.i18nAttr.split(';')) {
+      const [attr, key] = pair.split(':').map((s) => s.trim());
+      if (attr && key) el.setAttribute(attr, t(key, globals));
+    }
+  });
+}
+
+/** Shown only when more than one language is available. */
+function languageSwitcher() {
+  const codes = Object.keys(LOCALES);
+  if (codes.length < 2) return;
+  const el = $('langs');
+  el.setAttribute('role', 'navigation');
+  el.setAttribute('aria-label', t('lang.switch'));
+  el.innerHTML = codes
+    .map((code) => {
+      const name = escapeHtml(LOCALES[code]['lang.name'] ?? code);
+      const current = code === locale ? ' aria-current="true"' : '';
+      return `<a href="?lang=${code}" lang="${code}" hreflang="${code}"${current}>${name}</a>`;
+    })
+    .join('');
+  el.hidden = false;
+}
+
+// ---- State ---------------------------------------------------------------------
 
 const state = { ...DEFAULT_CONFIG };
 let artwork = null; // data URL of the client's image, or the painted default
@@ -33,7 +93,8 @@ function radioChips(container, name, items, label) {
 function colorSwatches() {
   const el = $('colors');
   el.innerHTML = COLORS.map(
-    (c) => `<button type="button" class="sw" data-c="${c.id}" aria-pressed="${c.id === state.color}"><span class="chipc" style="background:${c.hex}"></span>${c.name}</button>`,
+    (c) =>
+      `<button type="button" class="sw" data-c="${c.id}" aria-pressed="${c.id === state.color}"><span class="chipc" style="background:${c.hex}"></span>${escapeHtml(t(`catalog.color.${c.id}`))}</button>`,
   ).join('');
   el.addEventListener('click', (e) => {
     const b = e.target.closest('.sw');
@@ -47,61 +108,83 @@ function colorSwatches() {
 // ---- Static content built from the catalogue and config -------------------
 
 function priceTables() {
+  const dims = ([w, h]) => ({ w, h });
   $('tierTable').querySelector('tbody').innerHTML =
-    TIERS.map((t) => `<tr><td><b>${t.id}</b></td><td class="m">${t.fit[0]} × ${t.fit[1]} cm</td><td class="m">${formatKip(t.price)}</td></tr>`).join('') +
-    `<tr><td><b>XXL</b></td><td class="m">beyond ${TIERS.at(-1).fit[0]} × ${TIERS.at(-1).fit[1]} cm</td><td>On quote</td></tr>`;
-  $('matTable').querySelector('tbody').innerHTML = MAT_BANDS.map(
-    (b, i) => `<tr><td class="m">${i ? `${MAT_BANDS[i - 1].maxArea}–` : '≤ '}${b.maxArea} m²</td><td>${b.example}</td><td class="m">${formatKip(b.price)}</td></tr>`,
-  ).join('');
+    TIERS.map(
+      (tier) =>
+        `<tr><td><b>${tier.id}</b></td><td class="m">${escapeHtml(t('unit.dims', dims(tier.fit)))}</td><td class="m">${formatKip(tier.price)}</td></tr>`,
+    ).join('') +
+    `<tr><td><b>XXL</b></td><td class="m">${escapeHtml(t('prices.beyond', dims(TIERS.at(-1).fit)))}</td><td>${escapeHtml(t('total.onQuote'))}</td></tr>`;
+  $('matTable').querySelector('tbody').innerHTML = MAT_BANDS.map((band, i) => {
+    const area = i ? t('prices.areaRange', { min: MAT_BANDS[i - 1].maxArea, max: band.maxArea }) : t('prices.areaFirst', { max: band.maxArea });
+    return `<tr><td class="m">${escapeHtml(area)}</td><td>${escapeHtml(t('prices.upTo', dims(band.example)))}</td><td class="m">${formatKip(band.price)}</td></tr>`;
+  }).join('');
 }
 
 function contactBlock() {
   $('contact').innerHTML = [
-    ['WhatsApp', `<b>${escapeHtml(BUSINESS.whatsappDisplay)}</b>`],
-    ['Email', `<b>${escapeHtml(BUSINESS.email)}</b>`],
-    ['Workshop', `<span>${escapeHtml(BUSINESS.address)}, ${escapeHtml(BUSINESS.city)}</span>`],
-    ['Open', `<span>${escapeHtml(BUSINESS.hours)}</span>`],
+    [t('contact.whatsapp'), `<b>${escapeHtml(BUSINESS.whatsappDisplay)}</b>`],
+    [t('contact.email'), `<b>${escapeHtml(BUSINESS.email)}</b>`],
+    [t('contact.workshop'), `<span>${escapeHtml(BUSINESS.address)}, ${escapeHtml(BUSINESS.city)}</span>`],
+    [t('contact.open'), `<span>${escapeHtml(BUSINESS.hours)}</span>`],
   ]
-    .map(([k, v]) => `<div><span>${k}</span>${v}</div>`)
+    .map(([k, v]) => `<div><span>${escapeHtml(k)}</span>${v}</div>`)
     .join('');
   $('year').textContent = new Date().getFullYear();
 }
 
 // ---- Render ------------------------------------------------------------------
 
+/** Text of a price line returned by quote(). */
+function lineLabel(line) {
+  if (line.type === 'frame') {
+    return t('line.frame', {
+      size: line.tierId,
+      profile: lower(t(`catalog.profile.${line.profileId}`)),
+      color: lower(t(`catalog.color.${line.colorId}`)),
+    });
+  }
+  if (line.type === 'mat') {
+    return t('line.mat', { mat: lower(t(`catalog.mat.${line.matId}`)), area: line.areaM2.toFixed(2) });
+  }
+  return t(`catalog.glazing.${line.glazingId}`);
+}
+
 function render() {
   const q = quote(state);
   const note = $('quoteNote');
+  const range = { min: MIN_CM, max: MAX_CM };
 
   if (!q.valid) {
-    $('stage').innerHTML = '<p class="hint">Enter a size between 10 and 200 cm.</p>';
+    $('stage').innerHTML = `<p class="hint">${escapeHtml(t('preview.invalid', range))}</p>`;
     $('readout').innerHTML = '';
     $('lines').innerHTML = '';
     $('grand').textContent = '—';
     note.hidden = false;
-    note.textContent = 'Enter a size between 10 and 200 cm to see the price.';
+    note.textContent = t('total.invalidNote', range);
     return;
   }
 
-  $('stage').innerHTML = frameSVG(state, artwork);
+  const alt = t('preview.alt', { width: state.width, height: state.height, color: lower(t(`catalog.color.${state.color}`)) });
+  $('stage').innerHTML = frameSVG(state, artwork, escapeHtml(alt));
   const { opening, outside } = q.measures;
   $('readout').innerHTML = [
-    ['Artwork', `${state.width} × ${state.height} cm`],
-    ['Opening', `${opening.width} × ${opening.height} cm`],
-    ['Outside', `${+outside.width.toFixed(1)} × ${+outside.height.toFixed(1)} cm`],
-    ['Size', q.tierId],
+    [t('readout.artwork'), t('unit.dims', { w: state.width, h: state.height })],
+    [t('readout.opening'), t('unit.dims', { w: opening.width, h: opening.height })],
+    [t('readout.outside'), t('unit.dims', { w: +outside.width.toFixed(1), h: +outside.height.toFixed(1) })],
+    [t('readout.size'), q.tierId],
   ]
-    .map(([k, v]) => `<span>${k} <b>${v}</b></span>`)
+    .map(([k, v]) => `<span>${escapeHtml(k)} <b>${escapeHtml(v)}</b></span>`)
     .join('');
 
   $('lines').innerHTML = q.lines
-    .map((l) => `<div><span>${l.label}</span><span>${l.amount ? formatKip(l.amount) : 'included'}</span></div>`)
+    .map((l) => `<div><span>${escapeHtml(lineLabel(l))}</span><span>${l.amount ? formatKip(l.amount) : escapeHtml(t('total.included'))}</span></div>`)
     .join('');
 
   if (q.total === null) {
-    $('grand').textContent = 'On quote';
+    $('grand').textContent = t('total.onQuote');
     note.hidden = false;
-    note.textContent = 'This piece is larger than our standard sizes. Send the request and we will quote it individually.';
+    note.textContent = t('total.oversizeNote');
   } else {
     $('grand').textContent = formatKip(q.total);
     note.hidden = true;
@@ -169,23 +252,22 @@ function wireOrder() {
       notes: $('notes').value,
     };
     const err = $('err');
-    const problem = !quote(state).valid ? 'Enter a valid artwork size first.' : validateCustomer(customer);
+    const problem = !quote(state).valid ? 'invalidSize' : validateCustomer(customer);
     if (problem) {
       err.hidden = false;
-      err.textContent = problem;
+      err.textContent = t(`error.${problem}`);
       return;
     }
     err.hidden = true;
 
+    // The summary is written in the workshop's language (ORDER_LOCALE), not the page language.
     const text = orderSummary(state, customer, makeReference());
     $('summary').textContent = text;
     const link = whatsappLink(BUSINESS.whatsapp, text);
     const wa = $('waLink');
     wa.hidden = !link;
     if (link) wa.href = link;
-    $('doneText').textContent = link
-      ? 'Send it to the workshop on WhatsApp, or copy it and send it however you like.'
-      : 'Copy it and send it to the workshop by WhatsApp or email.';
+    $('doneText').textContent = t(link ? 'done.withWhatsapp' : 'done.copyOnly');
     form.hidden = true;
     done.hidden = false;
   });
@@ -203,7 +285,7 @@ function wireOrder() {
       .writeText(text)
       .then(() => {
         msg.hidden = false;
-        msg.textContent = 'Copied.';
+        msg.textContent = t('done.copied');
       })
       .catch(() => {
         const range = document.createRange();
@@ -212,19 +294,21 @@ function wireOrder() {
         sel.removeAllRanges();
         sel.addRange(range);
         msg.hidden = false;
-        msg.textContent = 'Text selected. Copy it with your keyboard or long-press.';
+        msg.textContent = t('done.selected');
       });
   });
 }
 
 // ---- Boot --------------------------------------------------------------------
 
+applyStaticTexts();
+languageSwitcher();
 artwork = paintDefaultArtwork();
 colorSwatches();
-radioChips($('profiles'), 'profile', PROFILES, (p) => `${p.name}<small>${p.width} cm</small>`);
-radioChips($('mats'), 'mat', MATS, (m) => m.name);
-radioChips($('margins'), 'margin', MAT_MARGINS, (m) => `${m} cm border`);
-radioChips($('glazing'), 'glazing', GLAZING, (g) => `${g.name}${g.note ? `<small>${g.note}</small>` : ''}`);
+radioChips($('profiles'), 'profile', PROFILES, (p) => `${escapeHtml(t(`catalog.profile.${p.id}`))}<small>${p.width} cm</small>`);
+radioChips($('mats'), 'mat', MATS, (m) => escapeHtml(t(`catalog.mat.${m.id}`)));
+radioChips($('margins'), 'margin', MAT_MARGINS, (m) => escapeHtml(t('mat.border', { cm: m })));
+radioChips($('glazing'), 'glazing', GLAZING, (g) => `${escapeHtml(t(`catalog.glazing.${g.id}`))}${g.note ? `<small>${escapeHtml(t(`catalog.glazingNote.${g.note}`))}</small>` : ''}`);
 priceTables();
 contactBlock();
 wireSize();

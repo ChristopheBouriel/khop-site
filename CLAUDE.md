@@ -17,15 +17,17 @@ Pas de build, pas de dépendance npm. Node 22 (`.nvmrc`).
 ## Structure
 
 ```
-index.html          page unique (balisage seulement, pas de style inline)
-src/catalog.js      catalogue et grille tarifaire — SEUL fichier à toucher pour les prix et options
+index.html          page unique (balisage seulement, pas de style inline) ; textes balisés par data-i18n
+src/catalog.js      catalogue et grille tarifaire — SEUL fichier à toucher pour les prix et options (ids, pas de libellés)
 src/config.js       coordonnées de l'atelier (WhatsApp, email, adresse, horaires)
+src/i18n/en.js      TOUS les textes du site, en anglais (langue de référence)
+src/i18n.js         choix de la langue et fonction de traduction t() (pur, testé)
 src/pricing.js      logique de prix pure (pas de DOM), testée
 src/order.js        récapitulatif de commande, référence, lien WhatsApp (pur, testé)
 src/preview.js      aperçu SVG du cadre, viewBox en centimètres
-src/main.js         câblage DOM : état, événements, rendu
+src/main.js         câblage DOM : langue, état, événements, rendu
 src/styles.css      tokens de couleur et typo sur :root, thèmes clair et sombre
-test/               tests node:test de pricing.js et order.js
+test/               tests node:test de pricing.js, order.js et des textes (i18n.test.js)
 prototype/          prototype d'origine, en un seul fichier — référence visuelle, ne pas modifier
 .github/workflows/  CI (tests) et déploiement GitHub Pages
 ```
@@ -38,6 +40,9 @@ prototype/          prototype d'origine, en un seul fichier — référence visu
 - Styles : uniquement via les tokens de `:root` dans `styles.css`. Chaque couleur ajoutée doit exister dans les trois blocs (clair, `prefers-color-scheme: dark`, `[data-theme="dark"]`).
 - La page doit marcher à 400 px de large sans scroll horizontal, en clair et en sombre.
 - Textes du site en anglais pour l'instant (les langues sont une question ouverte). Code et commentaires en anglais, docs du projet en français.
+- **Aucun texte visible en dur** dans `main.js`, `pricing.js`, `order.js`, `preview.js` ou `catalog.js` : tout passe par une clé de `src/i18n/en.js` et `t()`. Dans `index.html`, un texte balisé `data-i18n` doit rester identique à la valeur de `en.js` (un test le vérifie). Voir D7.
+- Ajouter une option au catalogue = un id dans `catalog.js` **et** son libellé `catalog.<type>.<id>` dans `en.js` (un test échoue sinon).
+- Ajouter une langue : copier `src/i18n/en.js` en `src/i18n/<code>.js`, traduire les valeurs, l'enregistrer dans `LOCALES` de `src/i18n.js`. Le sélecteur de langue apparaît tout seul. Ne pas ajouter de langue sans décision de Christophe et Hermann, ni de traduction en lao non relue par un locuteur natif.
 - Le dossier `prototype/` ne bouge pas.
 
 ## Avant de dire qu'un changement est fini

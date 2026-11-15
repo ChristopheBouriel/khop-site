@@ -5,9 +5,22 @@ Chaque jalon a un critère de sortie. On ne passe au suivant qu'une fois ce crit
 ## M0 — Mise en route
 **Sortie :** Hermann a vu la preview en ligne.
 - [x] Découper le prototype en modules, avec tests et CI
-- [ ] Créer le dépôt GitHub (privé) et pousser
-- [ ] Activer Pages (Settings → Pages → Source : GitHub Actions)
-- [ ] Envoyer le lien de preview à Hermann, avec les questions ouvertes de `HANDOFF.md` §4
+- [x] Dépôt git local (branche `main`)
+- [ ] **En attente de Christophe, qui en parle avec Hermann :** dépôt distant et hébergement de la preview (D6). Ne rien créer ni déployer avant.
+- [ ] Montrer le site à Hermann, avec les questions ouvertes de `HANDOFF.md` §4
+
+## Défauts relevés à la revue du 15 novembre 2026
+Rien n'a été corrigé : Christophe choisit ce qu'on traite. Aucun ne dépend de Hermann, sauf le n° 5. Classés du plus au moins gênant.
+- [ ] 1. **Tables de prix sur téléphone** : la colonne des prix est hors écran, il faut faire défiler la table sur le côté pour la voir (`table{min-width:520px}`).
+- [ ] 2. **Photo du client** : l'image est relue en entier à chaque changement d'option (data URL réinjectée dans le SVG), ce qui ralentit la page avec une photo de téléphone ; et un format illisible (HEIC hors Safari) ne donne aucun message. Réduire l'image à l'import et gérer l'erreur.
+- [ ] 3. **« Preview with your image » inaccessible au clavier** : c'est un `label` sur un champ caché.
+- [ ] 4. **Sans passe-partout, les largeurs de marge restent cliquables** et l'une reste sélectionnée, sans effet.
+- [ ] 5. **Recouvrement de 3 mm** : l'aide dit que le passe-partout recouvre l'œuvre de 3 mm par côté, mais le calcul n'en tient pas compte (ouverture = œuvre + 2 × marge). À trancher avec Hermann : corriger le texte ou le calcul.
+- [ ] 6. **Couleurs hors tokens** : `.err` (`#B3261E`, peu lisible en sombre) et le texte de `.cta` (`#1B1408`), contraire à la règle de `CLAUDE.md`.
+- [ ] 7. **Message d'erreur du formulaire** non annoncé aux lecteurs d'écran (pas de `role="alert"`) ; l'email et la quantité (max 50) ne sont pas vérifiés ; « Match image proportions » peut donner une hauteur de plus de 200 cm.
+- [ ] 8. **Sur téléphone** : le menu disparaît sans remplacement, et l'aperçu n'est plus visible pendant qu'on choisit les options plus bas.
+- [ ] 9. **Référence `KH-MMJJ-XXXX`** tirée au hasard dans le navigateur : sans année, doublons possibles. Suffisant tant que rien n'est enregistré ; à revoir en M2.
+- [ ] 10. Polices chargées depuis Google Fonts : à héberger avec le site si le chargement est lent au Laos.
 
 ## M1 — Vrai contenu
 **Sortie :** plus aucun PLACEHOLDER dans `catalog.js`, `config.js` et `index.html`.
@@ -29,9 +42,14 @@ Chaque jalon a un critère de sortie. On ne passe au suivant qu'une fois ce crit
 
 ## M3 — Langues
 **Sortie :** le site est disponible dans les langues décidées.
+- [x] Extraire les textes dans un fichier de traduction (`src/i18n/en.js`, voir D7)
 - [ ] Décider des langues (EN, LO, FR ?)
-- [ ] Extraire les textes de `index.html` et `main.js` dans des fichiers de traduction ; revoir D1 si nécessaire
+- [ ] Pour chaque langue : créer `src/i18n/<code>.js` et l'enregistrer dans `src/i18n.js` (marche à suivre dans `CLAUDE.md`)
 - [ ] Faire relire le lao par un locuteur natif
+- [ ] Rendre traduisibles les restes en dur : horaires de `config.js`, format des montants, unité « cm »
+- [ ] Vérifier la mise en page avec la police lao et des textes plus longs (français), à 400 px
+- [ ] Langue du récapitulatif envoyé à l'atelier (D8)
+- [ ] Si le référencement par langue compte : pages par langue, donc revoir D1
 
 ## M4 — Lancement
 **Sortie :** le site est en ligne sur son domaine.

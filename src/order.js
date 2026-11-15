@@ -1,7 +1,11 @@
 // Builds the order request. Pure functions, testable in Node.
 // V1 sends nothing to a server: the client copies the text or opens WhatsApp (see docs/DECISIONS.md, D4).
-import { COLORS, PROFILES, MATS, GLAZING, byId } from './catalog.js';
+import { PROFILES, byId } from './catalog.js';
 import { quote, formatKip } from './pricing.js';
+import { translator, ORDER_LOCALE } from './i18n.js';
+
+/** Values of the "How will you bring the artwork?" select; each has a drop.<value> label. */
+export const DROP_OFF = ['workshop', 'frameOnly', 'print'];
 
 /** Short reference like "KH-1115-4F2A" (month+day, then 4 random chars). */
 export function makeReference(date = new Date(), rand = Math.random) {
@@ -10,36 +14,42 @@ export function makeReference(date = new Date(), rand = Math.random) {
   return `KH-${mmdd}-${suffix}`;
 }
 
-/** Returns an error message, or null when the customer details are usable. */
+/** Returns an error code (an `error.<code>` text key), or null when the customer details are usable. */
 export function validateCustomer({ name, phone }) {
-  if (!name?.trim() || !phone?.trim()) {
-    return 'Add your name and a phone or WhatsApp number so we can confirm the order.';
-  }
-  return null;
+  return !name?.trim() || !phone?.trim() ? 'missingContact' : null;
 }
 
-/** Plain-text order summary sent to the workshop. */
-export function orderSummary(config, customer, reference) {
+/**
+ * Plain-text order summary sent to the workshop.
+ * Written in the workshop's language (ORDER_LOCALE) by default, not the client's.
+ */
+export function orderSummary(config, customer, reference, t = translator(ORDER_LOCALE)) {
   const q = quote(config);
   const qty = Math.max(1, Math.floor(customer.quantity) || 1);
   const profile = byId(PROFILES, config.profile);
-  const mat = byId(MATS, config.mat);
   const { opening } = q.measures;
-  const estimate = q.total === null ? `on quote (size ${q.tierId})` : formatKip(q.total * qty);
+  const size = { w: opening.width, h: opening.height };
+  const estimate = q.total === null ? t('summary.onQuote', { size: q.tierId }) : formatKip(q.total * qty);
 
   return [
-    `Order request ${reference}`,
-    `Artwork: ${config.width} × ${config.height} cm`,
-    `Moulding: ${byId(COLORS, config.color).name}, ${profile.name} (${profile.width} cm)`,
-    `Mat: ${config.mat === 'none' ? 'none' : `${mat.name}, ${config.margin} cm border`} → opening ${opening.width} × ${opening.height} cm`,
-    `Glazing: ${byId(GLAZING, config.glazing).name}`,
-    `Quantity: ${qty}`,
-    `Estimate: ${estimate}`,
-    `Artwork drop-off: ${customer.dropOff}`,
-    `Name: ${customer.name.trim()}`,
-    `Phone: ${customer.phone.trim()}`,
-    customer.email?.trim() ? `Email: ${customer.email.trim()}` : null,
-    customer.notes?.trim() ? `Notes: ${customer.notes.trim()}` : null,
+    t('summary.title', { ref: reference }),
+    t('summary.artwork', { w: config.width, h: config.height }),
+    t('summary.moulding', {
+      color: t(`catalog.color.${config.color}`),
+      profile: t(`catalog.profile.${config.profile}`),
+      width: profile.width,
+    }),
+    config.mat === 'none'
+      ? t('summary.matNone', size)
+      : t('summary.mat', { mat: t(`catalog.mat.${config.mat}`), margin: config.margin, ...size }),
+    t('summary.glazing', { glazing: t(`catalog.glazing.${config.glazing}`) }),
+    t('summary.quantity', { qty }),
+    t('summary.estimate', { amount: estimate }),
+    t('summary.drop', { drop: t(`drop.${customer.dropOff}`) }),
+    t('summary.name', { name: customer.name.trim() }),
+    t('summary.phone', { phone: customer.phone.trim() }),
+    customer.email?.trim() ? t('summary.email', { email: customer.email.trim() }) : null,
+    customer.notes?.trim() ? t('summary.notes', { notes: customer.notes.trim() }) : null,
   ]
     .filter(Boolean)
     .join('\n');

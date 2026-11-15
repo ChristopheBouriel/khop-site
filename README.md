@@ -17,16 +17,17 @@ Aucune installation : Node 22 suffit. Ouvrir `index.html` directement depuis le 
 
 Tout est dans `src/catalog.js`. Les coordonnées de l'atelier sont dans `src/config.js`. Après une modification de la grille de prix, lancer `npm test` : certains tests vérifient les montants et devront peut-être être ajustés.
 
-## Créer le dépôt GitHub
+Les libellés des options (noms des finitions, des passe-partout…) ne sont pas dans `catalog.js` mais avec les autres textes, dans `src/i18n/en.js`.
 
-```bash
-git init -b main
-git add .
-git commit -m "Initial import: Khop configurator, tests, CI, hand-off docs"
-gh repo create khop-site --private --source=. --push
-```
+## Modifier un texte ou ajouter une langue
 
-Puis dans GitHub : **Settings → Pages → Source : GitHub Actions**. La preview se met à jour à chaque push sur `main`.
+Tous les textes sont dans `src/i18n/en.js`. Si le texte apparaît aussi dans `index.html` (élément avec `data-i18n`), le modifier aux deux endroits : `npm test` signale tout écart.
+
+Pour ajouter une langue : copier `src/i18n/en.js` en `src/i18n/<code>.js`, traduire les valeurs sans toucher aux clés, puis l'ajouter à `LOCALES` dans `src/i18n.js`. Le sélecteur de langue apparaît alors dans l'en-tête, et `?lang=<code>` force une langue.
+
+## Dépôt et hébergement
+
+Le dépôt est local pour l'instant. Le dépôt distant et l'hébergement de la preview sont en suspens (voir D6 dans `docs/DECISIONS.md`).
 
 ## Documentation
 

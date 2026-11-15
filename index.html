@@ -14,95 +14,104 @@
 </head>
 <body>
 
+<!--
+  Texts: every element with a data-i18n attribute takes its text from the matching key in
+  src/i18n/<locale>.js. data-i18n-html is for values with markup, and data-i18n-attr
+  ("attribute:key" pairs separated by ";") is for attributes.
+  The English text written here is what shows before the script runs; it must stay identical
+  to src/i18n/en.js (test/i18n.test.js checks it).
+-->
+
 <!-- PLACEHOLDER banner: remove before launch (see docs/BACKLOG.md) -->
-<div class="proto">Preview: prices and contact details are placeholders</div>
+<div class="proto" data-i18n="banner.preview">Preview: prices and contact details are placeholders</div>
 
 <header class="top"><div class="wrap">
   <div class="brand">
     <svg class="mark" viewBox="0 0 34 34" aria-hidden="true"><path d="M2 2h30v30H2z" fill="none" stroke="currentColor" stroke-width="3"/><path d="M8 8h18v18H8z" fill="none" stroke="var(--saffron)" stroke-width="2"/><path d="M2 2l6 6M32 2l-6 6M2 32l6-6M32 32l-6-6" stroke="currentColor" stroke-width="1.5"/></svg>
-    <div><b>Khop</b> <span class="lao" lang="lo">ຂອບ</span><small>Framing atelier · Luang Prabang</small></div>
+    <div><b>Khop</b> <span class="lao" lang="lo">ຂອບ</span><small data-i18n="brand.tagline">Framing atelier · Luang Prabang</small></div>
   </div>
-  <nav><a href="#configure">Design a frame</a><a href="#pricing">Prices</a><a href="#custom">Custom work</a></nav>
+  <nav><a href="#configure" data-i18n="nav.design">Design a frame</a><a href="#pricing" data-i18n="nav.prices">Prices</a><a href="#custom" data-i18n="nav.custom">Custom work</a></nav>
+  <div class="langs" id="langs" hidden></div>
 </div></header>
 
 <main>
 <div class="wrap intro">
-  <h1>Frames made to the <em>centimetre</em>, for the work you care about.</h1>
-  <p>Enter the size of your print, painting or photo, choose the moulding and mat, and see it framed before you order. Pay when you collect it at the workshop.</p>
+  <h1 data-i18n-html="intro.title.html">Frames made to the <em>centimetre</em>, for the work you care about.</h1>
+  <p data-i18n="intro.lead">Enter the size of your print, painting or photo, choose the moulding and mat, and see it framed before you order. Pay when you collect it at the workshop.</p>
 </div>
 
 <div class="wrap bench" id="configure">
   <div class="stage">
-    <div class="stage-svg" id="stage" aria-label="Preview of your frame"></div>
+    <div class="stage-svg" id="stage" aria-label="Preview of your frame" data-i18n-attr="aria-label:preview.label"></div>
     <div class="readout" id="readout"></div>
     <div class="row">
-      <label class="ghost upload" for="photo">Preview with your image</label>
+      <label class="ghost upload" for="photo" data-i18n="preview.upload">Preview with your image</label>
       <input type="file" id="photo" accept="image/*" hidden>
-      <button class="ghost" id="matchRatio" type="button" hidden>Match image proportions</button>
+      <button class="ghost" id="matchRatio" type="button" hidden data-i18n="preview.matchRatio">Match image proportions</button>
     </div>
   </div>
 
   <div class="sheet">
     <div class="step">
-      <h2><i>01</i>Artwork size</h2>
+      <h2><i>01</i><span data-i18n="size.title">Artwork size</span></h2>
       <div class="dims">
-        <label class="fld" for="w">Width<input type="number" id="w" min="10" max="200" step="0.5" inputmode="decimal"></label>
+        <label class="fld" for="w"><span data-i18n="size.width">Width</span><input type="number" id="w" min="10" max="200" step="0.5" inputmode="decimal"></label>
         <span class="unit">×</span>
-        <label class="fld" for="h">Height<input type="number" id="h" min="10" max="200" step="0.5" inputmode="decimal"></label>
+        <label class="fld" for="h"><span data-i18n="size.height">Height</span><input type="number" id="h" min="10" max="200" step="0.5" inputmode="decimal"></label>
         <span class="unit">cm</span>
-        <button class="ghost" id="rotate" type="button" aria-label="Swap width and height">⇄ Rotate</button>
+        <button class="ghost" id="rotate" type="button" aria-label="Swap width and height" data-i18n="size.rotate" data-i18n-attr="aria-label:size.rotateLabel">⇄ Rotate</button>
       </div>
-      <p class="hint">Measure the visible image, not the paper edge. The mat will overlap it by 3 mm on each side.</p>
+      <p class="hint" data-i18n="size.hint">Measure the visible image, not the paper edge. The mat will overlap it by 3 mm on each side.</p>
     </div>
 
     <div class="step">
-      <h2><i>02</i>Moulding</h2>
+      <h2><i>02</i><span data-i18n="moulding.title">Moulding</span></h2>
       <div class="swatches" id="colors"></div>
       <div class="seg" id="profiles"></div>
     </div>
 
     <div class="step">
-      <h2><i>03</i>Mat (passe-partout)</h2>
+      <h2><i>03</i><span data-i18n="mat.title">Mat (passe-partout)</span></h2>
       <div class="seg" id="mats"></div>
       <div class="seg" id="margins"></div>
     </div>
 
     <div class="step">
-      <h2><i>04</i>Glazing</h2>
+      <h2><i>04</i><span data-i18n="glazing.title">Glazing</span></h2>
       <div class="seg" id="glazing"></div>
     </div>
 
     <div class="total" aria-live="polite">
       <div class="lines" id="lines"></div>
-      <div class="grand"><span>Estimated total</span><b id="grand"></b></div>
+      <div class="grand"><span data-i18n="total.label">Estimated total</span><b id="grand"></b></div>
       <p class="quote-note" id="quoteNote" hidden></p>
     </div>
 
     <form class="form" id="orderForm" novalidate>
-      <h2 class="form-title"><i>05</i>Your details</h2>
+      <h2 class="form-title"><i>05</i><span data-i18n="details.title">Your details</span></h2>
       <div class="two">
-        <label class="fld" for="name">Name<input type="text" id="name" autocomplete="name" required></label>
-        <label class="fld" for="phone">Phone or WhatsApp<input type="tel" id="phone" autocomplete="tel" required placeholder="+856 20 …"></label>
+        <label class="fld" for="name"><span data-i18n="details.name">Name</span><input type="text" id="name" autocomplete="name" required></label>
+        <label class="fld" for="phone"><span data-i18n="details.phone">Phone or WhatsApp</span><input type="tel" id="phone" autocomplete="tel" required placeholder="+856 20 …"></label>
       </div>
-      <label class="fld" for="email">Email (optional)<input type="email" id="email" autocomplete="email"></label>
+      <label class="fld" for="email"><span data-i18n="details.email">Email (optional)</span><input type="email" id="email" autocomplete="email"></label>
       <div class="two">
-        <label class="fld" for="qty">Quantity<input type="number" id="qty" min="1" max="50" value="1"></label>
-        <label class="fld" for="drop">How will you bring the artwork?<select id="drop"><option>I'll drop it at the workshop</option><option>Frame only, no artwork</option><option>Print it for me (ask for a quote)</option></select></label>
+        <label class="fld" for="qty"><span data-i18n="details.quantity">Quantity</span><input type="number" id="qty" min="1" max="50" value="1"></label>
+        <label class="fld" for="drop"><span data-i18n="details.drop">How will you bring the artwork?</span><select id="drop"><option value="workshop" data-i18n="drop.workshop">I'll drop it at the workshop</option><option value="frameOnly" data-i18n="drop.frameOnly">Frame only, no artwork</option><option value="print" data-i18n="drop.print">Print it for me (ask for a quote)</option></select></label>
       </div>
-      <label class="fld" for="notes">Notes<textarea id="notes" rows="3" placeholder="Hanging wire, deadline, anything we should know"></textarea></label>
+      <label class="fld" for="notes"><span data-i18n="details.notes">Notes</span><textarea id="notes" rows="3" placeholder="Hanging wire, deadline, anything we should know" data-i18n-attr="placeholder:details.notesPlaceholder"></textarea></label>
       <p class="err" id="err" hidden></p>
-      <button class="cta" type="submit" id="submitBtn">Send order request</button>
-      <p class="hint">No payment online. We confirm the price and pickup date by message, and you pay when you collect.</p>
+      <button class="cta" type="submit" id="submitBtn" data-i18n="details.submit">Send order request</button>
+      <p class="hint" data-i18n="details.hint">No payment online. We confirm the price and pickup date by message, and you pay when you collect.</p>
     </form>
 
     <div class="done" id="done" hidden>
-      <h3>Request ready</h3>
+      <h3 data-i18n="done.title">Request ready</h3>
       <p class="hint" id="doneText"></p>
       <pre id="summary"></pre>
       <div class="row">
-        <button class="cta" type="button" id="copyBtn">Copy request</button>
-        <a class="ghost" id="waLink" href="#" target="_blank" rel="noopener" hidden>Send on WhatsApp</a>
-        <button class="ghost" type="button" id="editBtn">Edit order</button>
+        <button class="cta" type="button" id="copyBtn" data-i18n="done.copy">Copy request</button>
+        <a class="ghost" id="waLink" href="#" target="_blank" rel="noopener" hidden data-i18n="done.whatsapp">Send on WhatsApp</a>
+        <button class="ghost" type="button" id="editBtn" data-i18n="done.edit">Edit order</button>
       </div>
       <p class="hint" id="copyMsg" hidden></p>
     </div>
@@ -110,40 +119,40 @@
 </div>
 
 <section class="band"><div class="wrap">
-  <h2>How an order works</h2>
+  <h2 data-i18n="how.title">How an order works</h2>
   <ol class="steps3">
-    <li><b>Design it here</b><p>Size, moulding, mat and glazing. The price updates as you go.</p></li>
-    <li><b>We confirm</b><p>We reply within a day by WhatsApp or email with the final price and a pickup date, usually 3 to 5 days later.</p></li>
-    <li><b>Collect and pay</b><p>Bring your artwork when it suits you. Pay by cash or LaoQR when you pick up the finished frame.</p></li>
+    <li><b data-i18n="how.1.title">Design it here</b><p data-i18n="how.1.text">Size, moulding, mat and glazing. The price updates as you go.</p></li>
+    <li><b data-i18n="how.2.title">We confirm</b><p data-i18n="how.2.text">We reply within a day by WhatsApp or email with the final price and a pickup date, usually 3 to 5 days later.</p></li>
+    <li><b data-i18n="how.3.title">Collect and pay</b><p data-i18n="how.3.text">Bring your artwork when it suits you. Pay by cash or LaoQR when you pick up the finished frame.</p></li>
   </ol>
 </div></section>
 
 <section class="band" id="pricing"><div class="wrap">
-  <h2>Prices</h2>
+  <h2 data-i18n="prices.title">Prices</h2>
   <div class="pricing">
     <div>
-      <h3>Frame, by size</h3>
-      <div class="tablewrap"><table id="tierTable"><thead><tr><th>Size</th><th>Fits up to</th><th>Frame + glass</th></tr></thead><tbody></tbody></table></div>
-      <p class="hint table-note">Size is measured on the opening, artwork plus mat. Larger pieces are quoted individually.</p>
+      <h3 data-i18n="prices.frame.title">Frame, by size</h3>
+      <div class="tablewrap"><table id="tierTable"><thead><tr><th data-i18n="prices.col.size">Size</th><th data-i18n="prices.col.fits">Fits up to</th><th data-i18n="prices.col.frame">Frame + glass</th></tr></thead><tbody></tbody></table></div>
+      <p class="hint table-note" data-i18n="prices.note">Size is measured on the opening, artwork plus mat. Larger pieces are quoted individually.</p>
     </div>
     <div>
-      <h3>Mat, by surface</h3>
-      <div class="tablewrap"><table id="matTable"><thead><tr><th>Mat surface</th><th>Roughly</th><th>Price</th></tr></thead><tbody></tbody></table></div>
+      <h3 data-i18n="prices.mat.title">Mat, by surface</h3>
+      <div class="tablewrap"><table id="matTable"><thead><tr><th data-i18n="prices.col.surface">Mat surface</th><th data-i18n="prices.col.roughly">Roughly</th><th data-i18n="prices.col.price">Price</th></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
 </div></section>
 
 <section class="band" id="custom"><div class="wrap custom">
   <div>
-    <h2>Something the configurator can't do?</h2>
-    <p>Shadow boxes for textiles and objects, floating mounts for Saa paper and canvas, multi-opening mats, or a series of frames for a gallery or hotel. Tell us about the piece and we'll come back with options and a quote.</p>
-    <p>Artists and photographers preparing an exhibition: ask about series pricing.</p>
+    <h2 data-i18n="custom.title">Something the configurator can't do?</h2>
+    <p data-i18n="custom.text">Shadow boxes for textiles and objects, floating mounts for Saa paper and canvas, multi-opening mats, or a series of frames for a gallery or hotel. Tell us about the piece and we'll come back with options and a quote.</p>
+    <p data-i18n="custom.artists">Artists and photographers preparing an exhibition: ask about series pricing.</p>
   </div>
   <div class="contact" id="contact"></div>
 </div></section>
 </main>
 
-<footer><div class="wrap"><span>Khop <span lang="lo" class="lao-inline">ຂອບ</span> means "edge" in Lao.</span><span>© <span id="year">2026</span> Khop Framing Atelier</span></div></footer>
+<footer><div class="wrap"><span data-i18n-html="footer.meaning.html">Khop <span lang="lo" class="lao-inline">ຂອບ</span> means "edge" in Lao.</span><span>© <span id="year">2026</span> Khop Framing Atelier</span></div></footer>
 
 </body>
 </html>

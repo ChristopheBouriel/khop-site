@@ -128,3 +128,9 @@ a.ghost{text-decoration:none;display:inline-block}
 .table-note{margin-top:10px}
 .lao-inline{font-family:var(--f-lao)}
 .pricing>div,.custom>div,.intro>*{min-width:0}
+
+/* Language switcher: only rendered when src/i18n.js lists more than one locale */
+.langs{display:flex;gap:12px;font-size:13.5px}
+.langs a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent}
+.langs a:hover{border-color:var(--saffron)}
+.langs a[aria-current]{color:var(--ink);font-weight:600}

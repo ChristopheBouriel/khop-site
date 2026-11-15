@@ -8,7 +8,7 @@ const customer = {
   phone: '+856 20 5555 1234',
   email: '',
   quantity: 2,
-  dropOff: "I'll drop it at the workshop",
+  dropOff: 'workshop',
   notes: '',
 };
 
@@ -19,8 +19,39 @@ test('reference format', () => {
 
 test('customer validation requires name and phone', () => {
   assert.equal(validateCustomer(customer), null);
-  assert.ok(validateCustomer({ ...customer, phone: '  ' }));
-  assert.ok(validateCustomer({ ...customer, name: '' }));
+  assert.equal(validateCustomer({ ...customer, phone: '  ' }), 'missingContact');
+  assert.equal(validateCustomer({ ...customer, name: '' }), 'missingContact');
+});
+
+test('summary: full text for the default configuration', () => {
+  const text = orderSummary(DEFAULT_CONFIG, { ...customer, email: ' noy@example.com ', notes: 'Hanging wire' }, 'KH-0000-TEST');
+  assert.equal(
+    text,
+    [
+      'Order request KH-0000-TEST',
+      'Artwork: 40 × 30 cm',
+      'Moulding: Natural teak, Classic (3.5 cm)',
+      'Mat: Bright white, 6 cm border → opening 52 × 42 cm',
+      'Glazing: Clear glass',
+      'Quantity: 2',
+      'Estimate: 1,420,000 ₭',
+      "Artwork drop-off: I'll drop it at the workshop",
+      'Name: Noy',
+      'Phone: +856 20 5555 1234',
+      'Email: noy@example.com',
+      'Notes: Hanging wire',
+    ].join('\n'),
+  );
+});
+
+test('summary without a mat', () => {
+  const text = orderSummary({ ...DEFAULT_CONFIG, mat: 'none' }, customer, 'R');
+  assert.match(text, /Mat: none → opening 40 × 30 cm/);
+});
+
+test('summary uses the translator it is given', () => {
+  const t = (key, params = {}) => `${key}${params.ref ?? ''}`;
+  assert.match(orderSummary(DEFAULT_CONFIG, customer, 'R1', t), /^summary\.titleR1\n/);
 });
 
 test('summary multiplies the estimate by quantity and trims fields', () => {

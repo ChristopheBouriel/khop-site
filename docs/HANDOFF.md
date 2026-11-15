@@ -35,12 +35,28 @@ Un prototype d'une seule page a été fait dans Claude (`prototype/khop-prototyp
 - **Formulaire de commande.** Il produit un récapitulatif texte avec une référence `KH-MMJJ-XXXX`, que le client copie ou envoie sur WhatsApp (lien `wa.me`, actif seulement si un numéro est configuré).
 - Section « Custom work » avec les coordonnées.
 - Thème clair et sombre automatique, mise en page mobile.
-- 16 tests (`npm test`), CI GitHub, déploiement GitHub Pages.
+- 29 tests (`npm test`) : prix, commande, cohérence des textes.
+- Textes regroupés dans `src/i18n/en.js`, prêts à être traduits (D7).
+- Workflows GitHub présents (tests, déploiement Pages) mais jamais lancés.
 
 **Pas encore fait :**
 - Aucune commande n'arrive à l'atelier automatiquement : le client doit copier ou envoyer lui-même.
 - L'image chargée par le client reste dans son navigateur ; elle n'est pas jointe à la commande.
-- Le site n'existe qu'en anglais.
+- Le site n'existe qu'en anglais (la mécanique de traduction est en place, aucune autre langue n'est écrite).
+- Le dépôt n'existe qu'en local : ni dépôt GitHub, ni preview en ligne.
+
+## 2 bis. Où reprendre
+
+**État au 15 novembre 2026, fin de la première session Claude Code.**
+- Dépôt git local sur `main`. Vérifier avec `git status` s'il reste des modifications non commitées.
+- Fait pendant la session : revue du code et du site dans un navigateur (400 px et bureau, clair et sombre, parcours de commande complet, aucune erreur console), puis extraction des textes (D7, D8).
+- **La revue a relevé 10 défauts, listés dans `BACKLOG.md`. Aucun n'est corrigé.**
+- **Hébergement et dépôt distant : en suspens**, Christophe en parle avec Hermann (D6). Ne pas créer de dépôt GitHub ni déployer sans qu'il le demande.
+
+**Pour reprendre**, dans l'ordre le plus probable :
+1. Christophe rapporte les réponses de Hermann aux questions du §4 → M1 (vrai contenu) et la décision d'hébergement.
+2. Sans attendre Hermann : corriger les défauts du backlog (tous sauf le n° 5), ou préparer le côté site de M2 (écran de confirmation, anti-spam, messages d'erreur).
+3. Dès que les langues sont décidées : M3, il n'y a plus qu'à écrire les fichiers de traduction.
 
 ## 3. Ce qui est provisoire (PLACEHOLDER)
 
@@ -81,7 +97,7 @@ Tout ceci a été inventé pour le prototype et **ne doit pas partir en ligne te
 
 ## 6. Architecture
 
-Site statique : HTML, CSS et modules ES natifs, sans build ni dépendance (voir D1). Les fichiers sont décrits dans `CLAUDE.md`. Le principe : les données (`catalog.js`, `config.js`) sont séparées de la logique pure et testée (`pricing.js`, `order.js`), elle-même séparée du rendu (`preview.js`, `main.js`).
+Site statique : HTML, CSS et modules ES natifs, sans build ni dépendance (voir D1). Les fichiers sont décrits dans `CLAUDE.md`. Le principe : les données (`catalog.js`, `config.js`) et les textes (`src/i18n/`) sont séparés de la logique pure et testée (`pricing.js`, `order.js`, `i18n.js`), elle-même séparée du rendu (`preview.js`, `main.js`).
 
 L'aperçu (`preview.js`) génère un SVG dont le `viewBox` est en centimètres :
 - la moulure est faite de 4 trapèzes ombrés différemment ;
@@ -107,6 +123,6 @@ Voir `docs/BACKLOG.md`. En résumé :
 - **M3** : les langues.
 - **M4** : le lancement.
 
-## 9. Premier message à donner à Claude Code
+## 9. Message à donner à Claude Code pour reprendre
 
-> Lis CLAUDE.md puis docs/HANDOFF.md, docs/DECISIONS.md et docs/BACKLOG.md. Lance `npm test` et `npm run dev` pour vérifier que tout tourne, puis dis-moi en quelques lignes ce que tu comprends du projet et ce que tu proposes d'attaquer en premier dans le backlog. Ne modifie rien avant qu'on en ait parlé.
+> Lis CLAUDE.md puis docs/HANDOFF.md (surtout « Où reprendre »), docs/DECISIONS.md et docs/BACKLOG.md. Lance `npm test` et `git status`, puis dis-moi en quelques lignes où on en est et ce que tu proposes d'attaquer. Ne modifie rien avant qu'on en ait parlé.

@@ -48,8 +48,11 @@ export function paintDefaultArtwork() {
   return c.toDataURL('image/jpeg', 0.85);
 }
 
-/** Returns the SVG markup for a framed artwork. `imageHref` is a data: or same-origin URL. */
-export function frameSVG(config, imageHref) {
+/**
+ * Returns the SVG markup for a framed artwork. `imageHref` is a data: or same-origin URL.
+ * `label` is the accessible description, already translated and HTML-escaped by the caller.
+ */
+export function frameSVG(config, imageHref, label = '') {
   const { margin: m, profileWidth: f, opening, outside } = measure(config);
   const W = outside.width;
   const H = outside.height;
@@ -68,7 +71,7 @@ export function frameSVG(config, imageHref) {
 
   return `
   <svg viewBox="${-pad} ${-pad} ${W + 2 * pad} ${H + 2 * pad}" width="100%" height="100%" role="img"
-       aria-label="${config.width} by ${config.height} cm artwork in a ${byId(COLORS, config.color).name.toLowerCase()} frame">
+       aria-label="${label}">
     <defs>
       <filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="${f * 0.5}" stdDeviation="${f * 0.6}" flood-color="#000" flood-opacity=".28"/></filter>
       <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".42" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="${sheen}"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></linearGradient>

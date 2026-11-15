@@ -1,5 +1,5 @@
 // Pure pricing logic. No DOM access here, so it runs in Node tests and in the browser.
-import { TIERS, MAT_BANDS, GLAZING, PROFILES, COLORS, MATS, byId } from './catalog.js';
+import { TIERS, MAT_BANDS, GLAZING, PROFILES, byId } from './catalog.js';
 
 export const MIN_CM = 10;
 export const MAX_CM = 200;
@@ -38,7 +38,10 @@ export function findMatBand(areaM2) {
 
 /**
  * Full quote for one frame.
- * Returns { valid, measures, tierId, lines: [{label, amount}], total }
+ * Returns { valid, measures, tierId, lines, total }.
+ * Lines carry ids, not texts, so the caller labels them in the page language:
+ * { type: 'frame', tierId, profileId, colorId, amount }, { type: 'mat', matId, areaM2, amount },
+ * { type: 'glazing', glazingId, amount }.
  * `total` is null when the piece is larger than the biggest tier (quoted individually).
  */
 export function quote(config) {
@@ -51,24 +54,16 @@ export function quote(config) {
     return { valid: true, measures, tierId: 'XXL', lines: [], total: null };
   }
 
-  const profile = byId(PROFILES, config.profile);
-  const color = byId(COLORS, config.color);
-  const lines = [
-    {
-      label: `Frame, size ${tier.id} (${profile.name.toLowerCase()} ${color.name.toLowerCase()})`,
-      amount: tier.price,
-    },
-  ];
+  const lines = [{ type: 'frame', tierId: tier.id, profileId: config.profile, colorId: config.color, amount: tier.price }];
 
   if (config.mat !== 'none') {
     const band = findMatBand(measures.areaM2);
-    const mat = byId(MATS, config.mat);
     // Tiers and bands share the same upper bound, so a band always exists when a tier does.
-    lines.push({ label: `Mat, ${mat.name.toLowerCase()} (${measures.areaM2.toFixed(2)} m²)`, amount: band.price });
+    lines.push({ type: 'mat', matId: config.mat, areaM2: measures.areaM2, amount: band.price });
   }
 
   const glazing = byId(GLAZING, config.glazing);
-  lines.push({ label: glazing.name, amount: glazing.extraByTier?.[tier.id] ?? 0 });
+  lines.push({ type: 'glazing', glazingId: glazing.id, amount: glazing.extraByTier?.[tier.id] ?? 0 });
 
   const total = lines.reduce((sum, l) => sum + l.amount, 0);
   return { valid: true, measures, tierId: tier.id, lines, total };
