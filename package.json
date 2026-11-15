@@ -1,0 +1,14 @@
+{
+  "name": "khop-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Khop Framing Atelier: custom frame configurator and order requests",
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes serve@14.2.4 -l 5173 .",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

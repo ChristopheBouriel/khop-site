@@ -1,0 +1,428 @@
+<title>Khop Framing Atelier</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Lao:wght@500;700&display=swap">
+<style>
+/* Layout: workshop bench — live frame preview on the left (sticky), order sheet on the right; stacks on phones */
+:root{
+  --bg:#ECEEEA; --surface:#F8F9F6; --ink:#1B2130; --muted:#5B6271; --line:#D3D7D0;
+  --indigo:#2D3A86; --indigo-soft:#E2E5F3; --saffron:#C98512; --wall:#DCDFD8;
+  --ok:#2F7A4F;
+  --f-display:"Young Serif", Georgia, "Times New Roman", serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --f-lao:"Noto Sans Lao", "Lao UI", sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151C; --surface:#1A1E27; --ink:#E7E5DE; --muted:#9AA0AD; --line:#2C323E;
+  --indigo:#9AA6FF; --indigo-soft:#262C4A; --saffron:#E8A93A; --wall:#20242D; --ok:#6BC28F; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#12151C; --surface:#1A1E27; --ink:#E7E5DE; --muted:#9AA0AD; --line:#2C323E;
+  --indigo:#9AA6FF; --indigo-soft:#262C4A; --saffron:#E8A93A; --wall:#20242D; --ok:#6BC28F; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.proto{background:var(--indigo);color:var(--bg);font-size:12.5px;text-align:center;padding-block:6px}
+header.top{border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:12px}
+.mark{width:34px;height:34px;align-self:center;flex:none}
+.brand b{font-family:var(--f-display);font-weight:400;font-size:28px;letter-spacing:.02em}
+.brand .lao{font-family:var(--f-lao);font-weight:700;color:var(--saffron);font-size:18px}
+.brand small{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+nav{display:flex;gap:20px;font-size:14px}
+nav a{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent}
+nav a:hover{border-color:var(--saffron)}
+.intro{padding-block:40px 24px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:end}
+.intro h1{font-family:var(--f-display);font-weight:400;font-size:clamp(32px,5vw,52px);line-height:1.08;margin:0;text-wrap:balance}
+.intro h1 em{font-style:normal;color:var(--indigo)}
+.intro p{margin:0;color:var(--muted);max-width:44ch}
+.bench{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:28px;padding-block:8px 56px}
+.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;background:var(--wall);border-radius:var(--r);padding:28px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.stage-svg{display:flex;align-items:center;justify-content:center;min-height:340px;aspect-ratio:5/4;max-width:100%}
+.stage-svg svg{max-width:100%;max-height:100%;overflow:visible}
+.readout{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--f-mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.readout span b{color:var(--ink);font-weight:500}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0}
+.step{padding:22px 24px;border-bottom:1px solid var(--line);display:grid;gap:12px}
+.step h2{margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;display:flex;gap:10px;align-items:baseline}
+.step h2 i{font-style:normal;font-family:var(--f-mono);color:var(--saffron);font-weight:500}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.dims{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+label.fld{display:grid;gap:4px;font-size:12.5px;color:var(--muted)}
+input[type=number],input[type=text],input[type=email],input[type=tel],textarea,select{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:9px 11px;width:100%}
+.dims label.fld{width:110px}
+.dims .unit{font-family:var(--f-mono);font-size:13px;color:var(--muted);padding-bottom:10px}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,.chip:focus-within{outline:2px solid var(--indigo);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:8px 12px;font-size:13.5px}
+.ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
+.sw{display:grid;gap:6px;justify-items:start;background:none;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:left;color:var(--ink);font-size:12.5px;line-height:1.25}
+.sw .chipc{width:100%;height:26px;border-radius:4px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),inset 0 3px 0 rgba(255,255,255,.18)}
+.sw[aria-pressed=true]{border-color:var(--indigo);box-shadow:0 0 0 1px var(--indigo)}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.chip span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13.5px}
+.chip input:checked + span{background:var(--indigo);border-color:var(--indigo);color:var(--surface)}
+.chip small{color:inherit;opacity:.75;font-family:var(--f-mono);font-size:11.5px;margin-left:4px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.total{padding:22px 24px;display:grid;gap:10px;background:var(--indigo-soft);border-bottom:1px solid var(--line)}
+.lines{display:grid;gap:4px;font-size:14px}
+.lines div{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.lines div span:last-child{font-family:var(--f-mono);font-size:13.5px}
+.grand{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:10px}
+.grand b{font-family:var(--f-display);font-weight:400;font-size:28px;font-variant-numeric:tabular-nums}
+.quote-note{font-size:13.5px;color:var(--ink);margin:0}
+.form{padding:22px 24px;display:grid;gap:12px}
+.form .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cta{background:var(--saffron);color:#1B1408;border:none;border-radius:8px;padding:13px 18px;font-weight:700;font-size:15px}
+.cta:hover{filter:brightness(1.06)}
+.done{padding:22px 24px;display:grid;gap:12px}
+.done h3{margin:0;font-family:var(--f-display);font-weight:400;font-size:22px}
+.done pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:var(--f-mono);font-size:12.5px;margin:0;overflow-x:auto}
+.err{color:#B3261E;font-size:13px;margin:0}
+section.band{border-top:1px solid var(--line)}
+section.band .wrap{padding-block:48px}
+section.band h2{font-family:var(--f-display);font-weight:400;font-size:30px;margin:0 0 20px;text-wrap:balance}
+.steps3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;list-style:none;padding:0;margin:0;counter-reset:s}
+.steps3 li{counter-increment:s;display:grid;gap:6px;border-top:2px solid var(--ink);padding-top:12px}
+.steps3 li::before{content:counter(s);font-family:var(--f-mono);color:var(--saffron);font-size:13px}
+.steps3 b{font-size:16px}
+.steps3 p{margin:0;color:var(--muted);font-size:14px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);font-size:14px}
+th{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.m{font-family:var(--f-mono);font-size:13.5px}
+.pricing{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px}
+.pricing h3{margin:0 0 8px;font-size:14px;letter-spacing:.08em;text-transform:uppercase}
+.custom{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:32px;align-items:start}
+.custom p{color:var(--muted);max-width:56ch;margin:0 0 12px}
+.contact{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:10px;font-size:14px}
+.contact div{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.contact span:first-child{color:var(--muted)}
+.contact b{font-family:var(--f-mono);font-weight:500;user-select:all}
+footer .wrap{padding-block:28px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+@media (max-width:860px){
+  .intro,.bench,.pricing,.custom{grid-template-columns:1fr}
+  .stage{position:static;padding:18px}
+  .stage-svg{min-height:260px}
+  .steps3{grid-template-columns:1fr}
+  nav{display:none}
+}
+@media (max-width:480px){.form .two{grid-template-columns:1fr}.step,.total,.form,.done{padding-left:16px;padding-right:16px}}
+@media (prefers-reduced-motion:no-preference){.stage-svg svg{transition:opacity .2s}}
+</style>
+
+<div class="proto">Prototype — prices and contact details are placeholders</div>
+
+<header class="top"><div class="wrap">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 34 34" aria-hidden="true"><path d="M2 2h30v30H2z" fill="none" stroke="currentColor" stroke-width="3"/><path d="M8 8h18v18H8z" fill="none" stroke="var(--saffron)" stroke-width="2"/><path d="M2 2l6 6M32 2l-6 6M2 32l6-6M32 32l-6-6" stroke="currentColor" stroke-width="1.5"/></svg>
+    <div><b>Khop</b> <span class="lao" lang="lo">ຂອບ</span><small>Framing atelier · Luang Prabang</small></div>
+  </div>
+  <nav><a href="#configure">Design a frame</a><a href="#pricing">Prices</a><a href="#custom">Custom work</a></nav>
+</div></header>
+
+<main>
+<div class="wrap intro">
+  <h1>Frames made to the <em>centimetre</em>, for the work you care about.</h1>
+  <p>Enter the size of your print, painting or photo, choose the moulding and mat, and see it framed before you order. Pay when you collect it at the workshop.</p>
+</div>
+
+<div class="wrap bench" id="configure">
+  <div class="stage">
+    <div class="stage-svg" id="stage" aria-label="Preview of your frame"></div>
+    <div class="readout" id="readout"></div>
+    <div class="row">
+      <label class="ghost" for="photo" style="cursor:pointer">Preview with your image</label>
+      <input type="file" id="photo" accept="image/*" hidden>
+      <button class="ghost" id="matchRatio" hidden>Match image proportions</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <div class="step">
+      <h2><i>01</i>Artwork size</h2>
+      <div class="dims">
+        <label class="fld" for="w">Width<input type="number" id="w" min="10" max="200" step="0.5" value="40"></label>
+        <span class="unit">×</span>
+        <label class="fld" for="h">Height<input type="number" id="h" min="10" max="200" step="0.5" value="30"></label>
+        <span class="unit">cm</span>
+        <button class="ghost" id="rotate" type="button" aria-label="Swap width and height">⇄ Rotate</button>
+      </div>
+      <p class="hint">Measure the visible image, not the paper edge. The mat will overlap it by 3 mm on each side.</p>
+    </div>
+
+    <div class="step">
+      <h2><i>02</i>Moulding</h2>
+      <div class="swatches" id="colors"></div>
+      <div class="seg" id="profiles"></div>
+    </div>
+
+    <div class="step">
+      <h2><i>03</i>Mat (passe-partout)</h2>
+      <div class="seg" id="mats"></div>
+      <div class="seg" id="margins"></div>
+    </div>
+
+    <div class="step">
+      <h2><i>04</i>Glazing</h2>
+      <div class="seg" id="glazing"></div>
+    </div>
+
+    <div class="total" aria-live="polite">
+      <div class="lines" id="lines"></div>
+      <div class="grand"><span>Estimated total</span><b id="grand"></b></div>
+      <p class="quote-note" id="quoteNote" hidden></p>
+    </div>
+
+    <form class="form" id="orderForm" novalidate>
+      <h2 style="margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600"><i style="font-style:normal;font-family:var(--f-mono);color:var(--saffron);font-weight:500;margin-right:10px">05</i>Your details</h2>
+      <div class="two">
+        <label class="fld" for="name">Name<input type="text" id="name" autocomplete="name" required></label>
+        <label class="fld" for="phone">Phone or WhatsApp<input type="tel" id="phone" autocomplete="tel" required placeholder="+856 20 …"></label>
+      </div>
+      <label class="fld" for="email">Email (optional)<input type="email" id="email" autocomplete="email"></label>
+      <div class="two">
+        <label class="fld" for="qty">Quantity<input type="number" id="qty" min="1" max="50" value="1"></label>
+        <label class="fld" for="drop">How will you bring the artwork?<select id="drop"><option>I'll drop it at the workshop</option><option>Frame only, no artwork</option><option>Print it for me (ask for a quote)</option></select></label>
+      </div>
+      <label class="fld" for="notes">Notes<textarea id="notes" rows="3" placeholder="Hanging wire, deadline, anything we should know"></textarea></label>
+      <p class="err" id="err" hidden></p>
+      <button class="cta" type="submit" id="submitBtn">Send order request</button>
+      <p class="hint">No payment online. We confirm the price and pickup date by message, and you pay when you collect.</p>
+    </form>
+
+    <div class="done" id="done" hidden>
+      <h3>Request ready</h3>
+      <p class="hint" id="doneText"></p>
+      <pre id="summary"></pre>
+      <div class="row"><button class="cta" type="button" id="copyBtn">Copy request</button><button class="ghost" type="button" id="editBtn">Edit order</button></div>
+      <p class="hint" id="copyMsg" hidden></p>
+    </div>
+  </div>
+</div>
+
+<section class="band"><div class="wrap">
+  <h2>How an order works</h2>
+  <ol class="steps3">
+    <li><b>Design it here</b><p>Size, moulding, mat and glazing. The price updates as you go.</p></li>
+    <li><b>We confirm</b><p>We reply within a day by WhatsApp or email with the final price and a pickup date, usually 3 to 5 days later.</p></li>
+    <li><b>Collect and pay</b><p>Bring your artwork when it suits you. Pay by cash or LaoQR when you pick up the finished frame.</p></li>
+  </ol>
+</div></section>
+
+<section class="band" id="pricing"><div class="wrap">
+  <h2>Prices</h2>
+  <div class="pricing">
+    <div>
+      <h3>Frame, by size</h3>
+      <div class="tablewrap"><table id="tierTable"><thead><tr><th>Size</th><th>Fits up to</th><th>Frame + glass</th></tr></thead><tbody></tbody></table></div>
+      <p class="hint" style="margin-top:10px">Size is measured on the opening, artwork plus mat. Larger pieces are quoted individually.</p>
+    </div>
+    <div>
+      <h3>Mat, by surface</h3>
+      <div class="tablewrap"><table id="matTable"><thead><tr><th>Mat surface</th><th>Roughly</th><th>Price</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="band" id="custom"><div class="wrap custom">
+  <div>
+    <h2>Something the configurator can't do?</h2>
+    <p>Shadow boxes for textiles and objects, floating mounts for Saa paper and canvas, multi-opening mats, or a series of frames for a gallery or hotel. Tell us about the piece and we'll come back with options and a quote.</p>
+    <p>Artists and photographers preparing an exhibition: ask about series pricing.</p>
+  </div>
+  <div class="contact">
+    <div><span>WhatsApp</span><b>+856 20 XX XXX XXX</b></div>
+    <div><span>Email</span><b>hello@khop.la</b></div>
+    <div><span>Workshop</span><span>Address to come, Luang Prabang</span></div>
+    <div><span>Open</span><span>Mon–Sat, 9:00–18:00</span></div>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap"><span>Khop <span lang="lo" style="font-family:var(--f-lao)">ຂອບ</span> means "edge" in Lao.</span><span>© 2026 Khop Framing Atelier</span></div></footer>
+
+<script>
+const fmt = n => n.toLocaleString('en-US') + ' ₭';
+const COLORS = [
+  {id:'teak',name:'Natural teak',c:'#9A6A3C'},
+  {id:'darkteak',name:'Dark teak',c:'#4B301F'},
+  {id:'rosewood',name:'Rosewood',c:'#6E2F25'},
+  {id:'black',name:'Matte black',c:'#1F1F21'},
+  {id:'white',name:'Chalk white',c:'#ECEAE4'},
+  {id:'gold',name:'Brushed gold',c:'#B8934A'}
+];
+const PROFILES = [{id:'fine',name:'Fine',w:2},{id:'classic',name:'Classic',w:3.5},{id:'wide',name:'Wide',w:5}];
+const MATS = [
+  {id:'none',name:'No mat'},
+  {id:'white',name:'Bright white',c:'#FAFAF6'},
+  {id:'antique',name:'Antique white',c:'#EEE7D8'},
+  {id:'saa',name:'Saa paper',c:'#E3D7BF',saa:true},
+  {id:'charcoal',name:'Charcoal',c:'#2F3136'}
+];
+const MARGINS = [4,6,8];
+const TIERS = [
+  {id:'S',fit:[30,40],price:350000},
+  {id:'M',fit:[50,70],price:550000},
+  {id:'L',fit:[70,100],price:850000},
+  {id:'XL',fit:[100,140],price:1300000}
+];
+const MAT_BANDS = [
+  {max:0.12,price:90000,ex:'up to 30 × 40 cm'},
+  {max:0.35,price:160000,ex:'up to 50 × 70 cm'},
+  {max:0.70,price:260000,ex:'up to 70 × 100 cm'},
+  {max:1.40,price:400000,ex:'up to 100 × 140 cm'}
+];
+const GLAZING = [
+  {id:'glass',name:'Clear glass',add:()=>0,note:'included'},
+  {id:'ar',name:'Anti-reflective glass',add:t=>({S:120000,M:200000,L:320000,XL:480000})[t]},
+  {id:'none',name:'No glazing',add:()=>0,note:'for canvas'}
+];
+
+const S = {w:40,h:30,color:'teak',profile:'classic',mat:'white',margin:6,glazing:'glass',img:null,imgRatio:null};
+
+function chips(el,name,items,cur,label){
+  el.innerHTML = items.map(it=>{
+    const v = it.id ?? it; const id = name+'-'+v;
+    return `<label class="chip" for="${id}"><input type="radio" name="${name}" id="${id}" value="${v}" ${String(v)===String(cur)?'checked':''}><span>${label(it)}</span></label>`;
+  }).join('');
+  el.addEventListener('change',e=>{ const v=e.target.value; S[name] = isNaN(+v)?v:+v; render(); });
+}
+document.getElementById('colors').innerHTML = COLORS.map(c=>`<button type="button" class="sw" data-c="${c.id}" aria-pressed="${c.id===S.color}"><span class="chipc" style="background:${c.c}"></span>${c.name}</button>`).join('');
+document.getElementById('colors').addEventListener('click',e=>{const b=e.target.closest('.sw'); if(!b) return; S.color=b.dataset.c; document.querySelectorAll('.sw').forEach(x=>x.setAttribute('aria-pressed',x===b)); render();});
+chips(document.getElementById('profiles'),'profile',PROFILES,S.profile,p=>`${p.name}<small>${p.w} cm</small>`);
+chips(document.getElementById('mats'),'mat',MATS,S.mat,m=>m.name);
+chips(document.getElementById('margins'),'margin',MARGINS,S.margin,m=>`${m} cm border`);
+chips(document.getElementById('glazing'),'glazing',GLAZING,S.glazing,g=>`${g.name}${g.note?`<small>${g.note}</small>`:''}`);
+
+// Price tables
+document.querySelector('#tierTable tbody').innerHTML = TIERS.map(t=>`<tr><td><b>${t.id}</b></td><td class="m">${t.fit[0]} × ${t.fit[1]} cm</td><td class="m">${fmt(t.price)}</td></tr>`).join('') + `<tr><td><b>XXL</b></td><td class="m">beyond 100 × 140 cm</td><td>On quote</td></tr>`;
+document.querySelector('#matTable tbody').innerHTML = MAT_BANDS.map((b,i)=>`<tr><td class="m">${i?MAT_BANDS[i-1].max+'–':'≤ '}${b.max} m²</td><td>${b.ex}</td><td class="m">${fmt(b.price)}</td></tr>`).join('');
+
+// Default artwork: a small painted riverscape, so the preview looks real before any upload
+function defaultArt(){
+  const c=document.createElement('canvas'); c.width=900; c.height=700; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,700); g.addColorStop(0,'#F2C27A'); g.addColorStop(.45,'#E68A5C'); g.addColorStop(.62,'#8D5C78'); g.addColorStop(1,'#2E3550');
+  x.fillStyle=g; x.fillRect(0,0,900,700);
+  x.fillStyle='rgba(255,236,190,.9)'; x.beginPath(); x.arc(610,300,58,0,7); x.fill();
+  const hill=(y,amp,col,seed)=>{x.fillStyle=col;x.beginPath();x.moveTo(0,700);for(let i=0;i<=900;i+=10){x.lineTo(i,y+Math.sin(i/140+seed)*amp+Math.sin(i/47+seed*2)*amp*.3);}x.lineTo(900,700);x.fill();};
+  hill(370,40,'#6B4A6E',1); hill(420,30,'#4A3B5C',3); hill(470,22,'#2F2C45',5);
+  x.fillStyle='rgba(242,194,122,.35)'; for(let i=0;i<9;i++){x.fillRect(560-i*6,500+i*14,100+i*12,3);}
+  // spire of a wat on the far bank
+  x.fillStyle='#2A2740'; x.beginPath(); x.moveTo(250,470); x.lineTo(262,410); x.lineTo(274,470); x.fill(); x.fillRect(238,465,48,14);
+  return c.toDataURL('image/jpeg',.85);
+}
+const ART = defaultArt();
+
+function computed(){
+  const m = S.mat==='none'?0:S.margin;
+  const ow = S.w + 2*m, oh = S.h + 2*m;
+  const sorted=[ow,oh].sort((a,b)=>a-b);
+  const tier = TIERS.find(t=>sorted[0]<=t.fit[0] && sorted[1]<=t.fit[1]);
+  const area = (ow*oh)/10000;
+  const band = S.mat==='none'?null:MAT_BANDS.find(b=>area<=b.max);
+  return {m,ow,oh,tier,area,band};
+}
+
+function render(){
+  const valid = S.w>=10 && S.h>=10 && S.w<=200 && S.h<=200;
+  const {m,ow,oh,tier,area,band} = computed();
+  const f = PROFILES.find(p=>p.id===S.profile).w;
+  const col = COLORS.find(c=>c.id===S.color).c;
+  const mat = MATS.find(x=>x.id===S.mat);
+  const W = ow+2*f, H = oh+2*f;
+  const img = S.img || ART;
+  const pad = Math.max(W,H)*0.06;
+  const glass = S.glazing!=='none';
+  document.getElementById('stage').innerHTML = !valid ? '<p class="hint">Enter a size between 10 and 200 cm.</p>' : `
+  <svg viewBox="${-pad} ${-pad} ${W+2*pad} ${H+2*pad}" width="100%" height="100%" role="img" aria-label="${S.w} by ${S.h} cm artwork in a ${col} frame">
+    <defs>
+      <filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="${f*0.5}" stdDeviation="${f*0.6}" flood-color="#000" flood-opacity=".28"/></filter>
+      <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".42" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="${S.glazing==='ar'?0.04:0.16}"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <filter id="fiber"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 0.45  0 0 0 0 0.38  0 0 0 0 0.25  0 0 0 .22 0"/></filter>
+    </defs>
+    <g filter="url(#sh)">
+      <rect x="0" y="0" width="${W}" height="${H}" fill="${col}"/>
+    </g>
+    <polygon points="0,0 ${W},0 ${W-f},${f} ${f},${f}" fill="#fff" fill-opacity=".14"/>
+    <polygon points="${W},0 ${W},${H} ${W-f},${H-f} ${W-f},${f}" fill="#000" fill-opacity=".10"/>
+    <polygon points="0,${H} ${W},${H} ${W-f},${H-f} ${f},${H-f}" fill="#000" fill-opacity=".22"/>
+    <polygon points="0,0 0,${H} ${f},${H-f} ${f},${f}" fill="#fff" fill-opacity=".05"/>
+    <g stroke="#000" stroke-opacity=".18" stroke-width="${f*0.03}"><line x1="0" y1="0" x2="${f}" y2="${f}"/><line x1="${W}" y1="0" x2="${W-f}" y2="${f}"/><line x1="0" y1="${H}" x2="${f}" y2="${H-f}"/><line x1="${W}" y1="${H}" x2="${W-f}" y2="${H-f}"/></g>
+    ${m ? `<rect x="${f}" y="${f}" width="${ow}" height="${oh}" fill="${mat.c}"/>${mat.saa?`<rect x="${f}" y="${f}" width="${ow}" height="${oh}" filter="url(#fiber)"/>`:''}
+      <rect x="${f+m-0.35}" y="${f+m-0.35}" width="${S.w+0.7}" height="${S.h+0.7}" fill="${S.mat==='charcoal'?'#E9E6DE':'#FFFFFF'}" opacity=".9"/>` : ''}
+    <image href="${img}" x="${f+m}" y="${f+m}" width="${S.w}" height="${S.h}" preserveAspectRatio="xMidYMid slice"/>
+    <rect x="${f}" y="${f}" width="${ow}" height="${oh}" fill="none" stroke="#000" stroke-opacity=".25" stroke-width="${Math.max(f*0.05,0.1)}"/>
+    ${glass?`<rect x="${f}" y="${f}" width="${ow}" height="${oh}" fill="url(#sheen)"/>`:''}
+  </svg>`;
+
+  const ro = document.getElementById('readout');
+  ro.innerHTML = valid ? `<span>Artwork <b>${S.w} × ${S.h} cm</b></span><span>Opening <b>${ow} × ${oh} cm</b></span><span>Outside <b>${+(W).toFixed(1)} × ${+(H).toFixed(1)} cm</b></span><span>Size <b>${tier?tier.id:'XXL'}</b></span>` : '';
+
+  const lines=[]; let total=0;
+  const note=document.getElementById('quoteNote');
+  if(!valid){ note.hidden=false; note.textContent='Enter a size between 10 and 200 cm to see the price.'; document.getElementById('grand').textContent='—'; document.getElementById('lines').innerHTML=''; return; }
+  if(tier){
+    lines.push([`Frame, size ${tier.id} (${PROFILES.find(p=>p.id===S.profile).name.toLowerCase()} ${COLORS.find(c=>c.id===S.color).name.toLowerCase()})`,tier.price]); total+=tier.price;
+    if(band){ lines.push([`Mat, ${mat.name.toLowerCase()} (${area.toFixed(2)} m²)`,band.price]); total+=band.price; }
+    const g=GLAZING.find(x=>x.id===S.glazing); const ga=g.add(tier.id);
+    lines.push([g.name, ga]); total+=ga;
+    note.hidden=true;
+    document.getElementById('grand').textContent=fmt(total);
+  } else {
+    note.hidden=false; note.textContent='This piece is larger than our standard sizes. Send the request and we will quote it individually.';
+    document.getElementById('grand').textContent='On quote';
+  }
+  document.getElementById('lines').innerHTML = lines.map(([a,b])=>`<div><span>${a}</span><span>${b?fmt(b):'included'}</span></div>`).join('');
+  S.total = tier?total:null; S.tier = tier?tier.id:'XXL';
+}
+
+const wI=document.getElementById('w'), hI=document.getElementById('h');
+[wI,hI].forEach(i=>i.addEventListener('input',()=>{S.w=+wI.value||0;S.h=+hI.value||0;render();}));
+document.getElementById('rotate').onclick=()=>{[S.w,S.h]=[S.h,S.w];wI.value=S.w;hI.value=S.h;render();};
+document.getElementById('photo').addEventListener('change',e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>{S.imgRatio=im.naturalHeight/im.naturalWidth; S.img=r.result; document.getElementById('matchRatio').hidden=false; render();}; im.src=r.result; }; r.readAsDataURL(file);
+});
+document.getElementById('matchRatio').onclick=()=>{ if(!S.imgRatio) return; S.h=Math.round(S.w*S.imgRatio*2)/2; hI.value=S.h; render(); };
+
+// Order request
+const form=document.getElementById('orderForm');
+form.addEventListener('submit',e=>{
+  e.preventDefault();
+  const err=document.getElementById('err');
+  const name=document.getElementById('name').value.trim(), phone=document.getElementById('phone').value.trim();
+  if(!name||!phone){ err.hidden=false; err.textContent='Add your name and a phone or WhatsApp number so we can confirm the order.'; return; }
+  err.hidden=true;
+  const qty=Math.max(1,+document.getElementById('qty').value||1);
+  const {ow,oh}=computed(); const mat=MATS.find(x=>x.id===S.mat);
+  const ref='KH-'+new Date().toISOString().slice(5,10).replace('-','')+'-'+Math.random().toString(36).slice(2,6).toUpperCase();
+  const txt=[`Order request ${ref}`,
+    `Artwork: ${S.w} × ${S.h} cm`,
+    `Moulding: ${COLORS.find(c=>c.id===S.color).name}, ${PROFILES.find(p=>p.id===S.profile).name} (${PROFILES.find(p=>p.id===S.profile).w} cm)`,
+    `Mat: ${S.mat==='none'?'none':mat.name+', '+S.margin+' cm border'} → opening ${ow} × ${oh} cm`,
+    `Glazing: ${GLAZING.find(g=>g.id===S.glazing).name}`,
+    `Quantity: ${qty}`,
+    `Estimate: ${S.total?fmt(S.total*qty):'on quote (size '+S.tier+')'}`,
+    `Artwork: ${document.getElementById('drop').value}`,
+    `Name: ${name}`, `Phone: ${phone}`,
+    document.getElementById('email').value.trim()?`Email: ${document.getElementById('email').value.trim()}`:null,
+    document.getElementById('notes').value.trim()?`Notes: ${document.getElementById('notes').value.trim()}`:null
+  ].filter(Boolean).join('\n');
+  document.getElementById('summary').textContent=txt;
+  document.getElementById('doneText').textContent='On the live site this goes straight to the workshop. In this prototype, copy it and send it by WhatsApp.';
+  form.hidden=true; document.getElementById('done').hidden=false;
+});
+document.getElementById('editBtn').onclick=()=>{form.hidden=false;document.getElementById('done').hidden=true;document.getElementById('copyMsg').hidden=true;};
+document.getElementById('copyBtn').onclick=()=>{
+  const t=document.getElementById('summary').textContent, m=document.getElementById('copyMsg');
+  navigator.clipboard.writeText(t).then(()=>{m.hidden=false;m.textContent='Copied.';}).catch(()=>{const s=window.getSelection(),r=document.createRange();r.selectNodeContents(document.getElementById('summary'));s.removeAllRanges();s.addRange(r);m.hidden=false;m.textContent='Text selected. Copy it with your keyboard or long-press.';});
+};
+render();
+</script>
