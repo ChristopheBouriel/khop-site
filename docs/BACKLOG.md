@@ -6,7 +6,7 @@ Chaque jalon a un critère de sortie. On ne passe au suivant qu'une fois ce crit
 **Sortie :** Hermann a vu la preview en ligne.
 - [x] Découper le prototype en modules, avec tests et CI
 - [x] Dépôt git local (branche `main`)
-- [ ] Dépôt GitHub public et preview sur GitHub Pages (D6, procédure `docs/SETUP.md`)
+- [x] Dépôt GitHub public et preview sur GitHub Pages (D6, procédure `docs/SETUP.md`) : https://christophebouriel.github.io/khop-site/
 - [ ] Montrer le site à Hermann, avec les questions ouvertes de `HANDOFF.md` §4
 
 ## Défauts relevés à la revue du 15 novembre 2026

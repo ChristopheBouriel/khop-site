@@ -1,6 +1,8 @@
 # Hand-off : site Khop
 
-_Dernière mise à jour : 15 novembre 2026._
+_Dernière mise à jour : 18 novembre 2026._
+
+**Preview en ligne :** https://christophebouriel.github.io/khop-site/ (dépôt public https://github.com/ChristopheBouriel/khop-site).
 
 Ce document donne à Claude (ou à n'importe qui reprenant le projet) tout le contexte nécessaire. Il complète `CLAUDE.md`, qui décrit comment travailler dans le dépôt.
 
@@ -37,13 +39,12 @@ Un prototype d'une seule page a été fait dans Claude (`prototype/khop-prototyp
 - Thème clair et sombre automatique, mise en page mobile.
 - 29 tests (`npm test`) : prix, commande, cohérence des textes.
 - Textes regroupés dans `src/i18n/en.js`, prêts à être traduits (D7).
-- Workflows GitHub présents (tests, déploiement Pages) mais jamais lancés.
+- Dépôt GitHub public, CI (tests) et déploiement GitHub Pages à chaque push sur `main` (D6). La preview porte un `noindex`.
 
 **Pas encore fait :**
 - Aucune commande n'arrive à l'atelier automatiquement : le client doit copier ou envoyer lui-même.
 - L'image chargée par le client reste dans son navigateur ; elle n'est pas jointe à la commande.
 - Le site n'existe qu'en anglais (la mécanique de traduction est en place, aucune autre langue n'est écrite).
-- Le dépôt n'existe qu'en local : ni dépôt GitHub, ni preview en ligne.
 
 ## 2 bis. Où reprendre
 
@@ -51,10 +52,10 @@ Un prototype d'une seule page a été fait dans Claude (`prototype/khop-prototyp
 - Dépôt git local sur `main`. Vérifier avec `git status` s'il reste des modifications non commitées.
 - Fait pendant la session : revue du code et du site dans un navigateur (400 px et bureau, clair et sombre, parcours de commande complet, aucune erreur console), puis extraction des textes (D7, D8).
 - **La revue a relevé 10 défauts, listés dans `BACKLOG.md`. Aucun n'est corrigé.**
-- **Hébergement et dépôt distant : en suspens**, Christophe en parle avec Hermann (D6). Ne pas créer de dépôt GitHub ni déployer sans qu'il le demande.
+- **18 novembre 2026 : dépôt GitHub public créé et preview en ligne** sur GitHub Pages (D6, procédure `docs/SETUP.md`). Tout push sur `main` redéploie le site. Les commits utilisent l'adresse noreply de GitHub (config locale du dépôt). L'hébergement de production reste à décider (question 7).
 
 **Pour reprendre**, dans l'ordre le plus probable :
-1. Christophe rapporte les réponses de Hermann aux questions du §4 → M1 (vrai contenu) et la décision d'hébergement.
+1. Christophe montre la preview à Hermann et rapporte ses réponses aux questions du §4 → M1 (vrai contenu) et la décision d'hébergement.
 2. Sans attendre Hermann : corriger les défauts du backlog (tous sauf le n° 5), ou préparer le côté site de M2 (écran de confirmation, anti-spam, messages d'erreur).
 3. Dès que les langues sont décidées : M3, il n'y a plus qu'à écrire les fichiers de traduction.
 
@@ -117,7 +118,7 @@ Si l'identité change, il suffit de remplacer les tokens et le logo ; les compos
 ## 8. Prochaines étapes
 
 Voir `docs/BACKLOG.md`. En résumé :
-- **M0** : pousser le dépôt, activer Pages, montrer la preview à Hermann.
+- **M0** : ~~pousser le dépôt, activer Pages~~ (fait le 18 novembre 2026) ; reste à montrer la preview à Hermann.
 - **M1** : remplacer les placeholders par le vrai contenu.
 - **M2** : faire arriver les commandes à l'atelier.
 - **M3** : les langues.
