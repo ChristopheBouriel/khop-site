@@ -6,7 +6,7 @@ Chaque jalon a un critère de sortie. On ne passe au suivant qu'une fois ce crit
 **Sortie :** Hermann a vu la preview en ligne.
 - [x] Découper le prototype en modules, avec tests et CI
 - [x] Dépôt git local (branche `main`)
-- [ ] **En attente de Christophe, qui en parle avec Hermann :** dépôt distant et hébergement de la preview (D6). Ne rien créer ni déployer avant.
+- [ ] Dépôt GitHub public et preview sur GitHub Pages (D6, procédure `docs/SETUP.md`)
 - [ ] Montrer le site à Hermann, avec les questions ouvertes de `HANDOFF.md` §4
 
 ## Défauts relevés à la revue du 15 novembre 2026
@@ -57,6 +57,7 @@ Rien n'a été corrigé : Christophe choisit ce qu'on traite. Aucun ne dépend d
 - [ ] Mesure d'audience légère, sans cookie (Plausible, GoatCounter ou Cloudflare Web Analytics)
 - [ ] Fiche Google Business Profile qui pointe vers le site
 - [ ] Vérification finale : mobile, sombre, accessibilité au clavier, Lighthouse
+- [ ] Retirer le bandeau « Preview » et la balise `noindex` d'`index.html` (D6)
 
 ## Plus tard
 - Galerie de réalisations

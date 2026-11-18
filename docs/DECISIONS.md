@@ -44,9 +44,15 @@ Dans tous les cas : protection anti-spam (honeypot et limitation de débit) et c
 - Logo : cadre à onglets.
 
 ## D6 — Hébergement de la preview : GitHub Pages
-**Statut : en suspens (15 novembre 2026).** Christophe en parle d'abord avec Hermann ; ne rien déployer ni créer de dépôt distant d'ici là. Le workflow `pages.yml` est resté dans le dépôt mais n'a jamais tourné.
+**Statut : décidé le 18 novembre 2026 par Christophe.**
 
-À savoir pour la discussion : Pages sur un dépôt privé demande un compte GitHub payant, et Pages ne peut pas héberger la fonction d'envoi des commandes envisagée pour M2 (D4). Cloudflare Pages ou Netlify couvrent les deux gratuitement. L'hébergement de production et le domaine restent à décider (voir la question ouverte 7).
+**Choix.**
+- Dépôt GitHub **public** `ChristopheBouriel/khop-site`, preview publiée par GitHub Pages via `.github/workflows/pages.yml`. Christophe accepte que le code, les docs internes et les PLACEHOLDER soient publics pour l'instant.
+- La preview porte `<meta name="robots" content="noindex">` (prix et coordonnées factices) : à retirer au lancement, avec le bandeau « Preview ».
+- Les commits utilisent l'adresse noreply de GitHub (`git config user.email` local au dépôt) ; l'historique antérieur a été réécrit avec cette adresse avant le premier push.
+- Procédure suivie : `docs/SETUP.md`.
+
+**Ce qui reste ouvert.** Pages sur un dépôt privé demande un compte GitHub payant, et Pages ne peut pas héberger la fonction d'envoi des commandes envisagée pour M2 (D4). Cloudflare Pages ou Netlify couvrent les deux gratuitement. L'hébergement de production et le domaine restent à décider (voir la question ouverte 7).
 
 ## D7 — Textes dans un dictionnaire, traduction au chargement
 **Statut : fait le 15 novembre 2026 par Claude Code, à la demande de Christophe (préparation de M3). Les langues elles-mêmes ne sont pas décidées.**
